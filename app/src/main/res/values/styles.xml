@@ -103,5 +103,10 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
+    <!-- Main Content -->
+    <style name="ArticleList" parent="MatchParent">
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
 
 </resources>
