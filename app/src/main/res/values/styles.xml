@@ -98,6 +98,13 @@
         <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
     </style>
 
+    <!-- Tabs -->
+
+    <style name="TabLayout" parent="FullWidth">
+        <item name="tabGravity">fill</item>
+        <item name="tabMode">fixed</item>
+    </style>
+
     <!-- Main Content -->
     <style name="MainContentContainer" parent="MatchParent">
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
@@ -108,5 +115,18 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
+    <style name="ArticleSummaryItem" parent="FullWidth">
+        <item name="android:layout_marginLeft">@dimen/dp_medium</item>
+        <item name="android:layout_marginRight">@dimen/dp_medium</item>
+        <item name="android:layout_marginTop">@dimen/dp_medium</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardCornerRadius">2dp</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ArticleSummaryItemContents" parent="FullWidth">
+        <item name="android:orientation">vertical</item>
+    </style>
 
 </resources>
