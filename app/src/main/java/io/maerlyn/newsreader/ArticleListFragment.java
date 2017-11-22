@@ -1,15 +1,19 @@
 package io.maerlyn.newsreader;
 
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +21,12 @@ import java.util.List;
  *
  * @author Maerlyn Broadbent
  */
-public class ArticleListFragment extends Fragment {
+public class ArticleListFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<List<Article>> {
+
+    public static final String LOG_TAG = ArticleListFragment.class.getName();
+    private static final int ARTICLE_LOADER_ID = 1;
+
     public static final String CATEGORY = "category";
     private Category type;
 
@@ -78,7 +87,21 @@ public class ArticleListFragment extends Fragment {
         // attach the adapter responsible for creating the attraction list
         recyclerView.setAdapter(new ArticleRecyclerAdapter(getData()));
 
+        if (hasInternetConnection()){
+            LoaderManager loaderManager = getLoaderManager();
+            loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
+        }
+
         return recyclerView;
+    }
+
+    private boolean hasInternetConnection() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     /**
@@ -98,6 +121,22 @@ public class ArticleListFragment extends Fragment {
                 return DataUtil.getCat4();
         }
         return null;
+    }
+
+    @Override
+    public Loader<List<Article>> onCreateLoader(int id, Bundle args) {
+        Log.i(LOG_TAG, "Create Loader");
+        return new ArticleLoader(getContext(), "http://content.guardianapis.com/search?q=debates&api-key=test");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Article>> loader, List<Article> earthquakes) {
+        Log.i(LOG_TAG, "Load Finished");
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Article>> loader) {
+        Log.i(LOG_TAG, "Loader Reset");
     }
 
 }

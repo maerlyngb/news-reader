@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.viewpager);
 
         if (viewPager != null) {
-            ArticleListPageAdapter adapter = new ArticleListPageAdapter(getSupportFragmentManager());
+            ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
 
             // each fragment is one of the attraction lists
             adapter.addFragment(ArticleListFragment.newInstance(Category.cat1), "Cat 1");
