@@ -7,9 +7,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
 /**
- * Created by maerlyn on 22/11/17.
+ * Handles actions for the side navigation drawer
+ *
+ * @author Maerlyn Broadbent
  */
-
 public class NavDrawerHandler implements NavigationView.OnNavigationItemSelectedListener {
 
     Activity activity;
