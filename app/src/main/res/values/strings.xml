@@ -6,7 +6,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="side_navigation_header_image">Side Navigation Header Image</string>
-    <string name="main_activity_title">News</string>
+    <string name="main_activity_title">The Guardian</string>
 
     <!-- Text to display in the list when there are no earthquakes [CHAR LIMIT=NONE] -->
     <string name="no_earthquakes">No earthquakes found.</string>
