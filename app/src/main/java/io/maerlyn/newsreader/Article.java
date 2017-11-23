@@ -1,9 +1,10 @@
 package io.maerlyn.newsreader;
 
 /**
- * Created by maerlyn on 22/11/17.
+ * Holds data about a specific news article
+ *
+ * @author Maerlyn Broadbent
  */
-
 public class Article {
     private String headline;
     private String sectionName;

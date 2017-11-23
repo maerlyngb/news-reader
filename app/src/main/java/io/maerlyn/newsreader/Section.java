@@ -1,10 +1,7 @@
 package io.maerlyn.newsreader;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Used to differentiate between different categories of articles
+ * Holds data about a specific news section
  *
  * @author Maerlyn Broadbent
  */
@@ -14,7 +11,7 @@ public class Section {
     private String webUrl;
     private String apiUrl;
 
-    public Section (String id, String webTitle, String webUrl, String apiUrl){
+    public Section(String id, String webTitle, String webUrl, String apiUrl) {
         this.id = id;
         this.webTitle = webTitle;
         this.webUrl = webUrl;

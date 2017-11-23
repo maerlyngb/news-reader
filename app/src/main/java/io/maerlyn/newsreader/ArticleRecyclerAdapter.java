@@ -13,15 +13,16 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Created by maerlyn on 22/11/17.
+ * Populates a RecyclerView with a list of articles
+ *
+ * @author Maerlyn Broadbent
  */
-
 public class ArticleRecyclerAdapter
         extends RecyclerView.Adapter<ArticleRecyclerAdapter.ViewHolder> {
     private List<Article> articles;
 
     /**
-     * Load the list of attractions to display in a list
+     * Load the list of articles to display in a list
      *
      * @param articles to be displayed
      */
@@ -30,7 +31,7 @@ public class ArticleRecyclerAdapter
     }
 
     /**
-     * Inflate a view for each attraction summary
+     * Inflate a view for each article
      */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -42,18 +43,20 @@ public class ArticleRecyclerAdapter
     /**
      * Bind data for each attraction summary
      *
-     * @param holder
-     * @param index  of the attraction in the dataset
+     * @param holder object to cache the {@link View} references
+     * @param index  of the article currently being displayed
      */
     @Override
     public void onBindViewHolder(final ViewHolder holder, int index) {
         if (hasArticles()) {
+
+            // display article data
             final Article article = articles.get(index);
             holder.title.setText(article.getHeadline());
             holder.section.setText(article.getSectionName());
             holder.date.setText(article.getWebPublicationDate());
 
-            // load activity detail when user taps the card
+            // open the article url when the user taps on it's card
             holder.cardView.setOnClickListener(v -> {
                 Context context = v.getContext();
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.getWebUrl()));
@@ -78,6 +81,11 @@ public class ArticleRecyclerAdapter
         }
     }
 
+    /**
+     * Replace the current list of articles with a new list
+     *
+     * @param articles to display
+     */
     public void newDataSet(List<Article> articles) {
         if (articles != null && articles.size() > 0) {
             this.articles.clear();
@@ -86,10 +94,18 @@ public class ArticleRecyclerAdapter
         }
     }
 
+    /**
+     * Is there currently and article data?
+     *
+     * @return boolean
+     */
     public boolean hasArticles() {
         return this.articles != null && this.articles.size() > 0;
     }
 
+    /**
+     * Clear list of articles from display and from memory
+     */
     public void clear() {
         this.articles.clear();
         notifyDataSetChanged();

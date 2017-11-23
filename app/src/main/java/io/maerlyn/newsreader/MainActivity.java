@@ -1,7 +1,11 @@
 package io.maerlyn.newsreader;
 
 import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -14,13 +18,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.List;
-import java.util.Locale;
 
+/**
+ * Application starting screen
+ *
+ * @author Maerlyn Broadbent
+ */
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<Section>>  {
+        implements LoaderCallbacks<List<Section>> {
 
-    private NavDrawerHandler navDrawerHandler;
     private static final int SECTION_LOADER_ID = 0;
+    private NavDrawerHandler navDrawerHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +41,16 @@ public class MainActivity extends AppCompatActivity
 
         this.navDrawerHandler = new NavDrawerHandler(this);
 
+        // setup side navigation drawer
         setupNavigationView(toolbar);
 
-        if (Util.hasInternetConnection(this)) {
+        if (QueryUtils.hasInternetConnection(this)) {
+
+            // if we have internet connectivity, start the loader to
+            // get a list of news sections from the server
             LoaderManager loaderManager = getLoaderManager();
             loaderManager.initLoader(SECTION_LOADER_ID, null, this);
         }
-
-        //setupTabbedContent();
     }
 
     /**
@@ -64,7 +74,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Setup tabbed attraction tabs and content
+     * Setup the tabbed navigation view
+     *
+     * @param sections to display
      */
     private void setupTabbedContent(List<Section> sections) {
         ViewPager viewPager = findViewById(R.id.viewpager);
@@ -73,7 +85,7 @@ public class MainActivity extends AppCompatActivity
             ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
 
             // each fragment is one of the attraction lists
-            for(Section section : sections){
+            for (Section section : sections) {
                 adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
             }
 
@@ -132,11 +144,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Create a new loader to load news article sections
+     *
+     * @param id   of the loader
+     * @param args {@link Bundle} data
+     * @return list of sections
+     */
     @Override
     public Loader<List<Section>> onCreateLoader(int id, Bundle args) {
         return new GuardianApi(this);
     }
 
+    /**
+     * When we have the section data, draw their tabs
+     *
+     * @param loader   data loader
+     * @param sections returned data
+     */
     @Override
     public void onLoadFinished(Loader<List<Section>> loader, List<Section> sections) {
         if (sections != null && sections.size() > 0) {
@@ -146,6 +171,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoaderReset(Loader<List<Section>> loader) {
-        //this.adapter.clear();
+        // loader reset
     }
 }

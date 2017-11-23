@@ -6,13 +6,13 @@ import android.content.Context;
 import java.util.List;
 
 /**
- * Created by maerlyn on 22/11/17.
+ * Asynchronously load articles from the Guardian API
+ *
+ * @author Maerlyn Broadbent
  */
-
 public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
 
-    private final String LOG_TAG = ArticleLoader.class.getName();
-
+    // section of articles we want to load
     String sectionId;
 
     public ArticleLoader(Context context, String sectionId) {
@@ -20,14 +20,24 @@ public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
         this.sectionId = sectionId;
     }
 
+    /**
+     * Start the load
+     */
     @Override
     protected void onStartLoading() {
         forceLoad();
     }
 
+    /**
+     * Background task to load articles
+     *
+     * @return list of {@link Article objects}
+     */
     @Override
     public List<Article> loadInBackground() {
         GuardianApi api = new GuardianApi(getContext());
+
+        // set the section of articles we want to load
         api.setCategory(sectionId);
         return QueryUtils.fetchArticleData(api.getUrl());
     }

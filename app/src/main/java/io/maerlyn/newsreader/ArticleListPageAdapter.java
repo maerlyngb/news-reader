@@ -25,7 +25,7 @@ public class ArticleListPageAdapter extends FragmentPagerAdapter {
      * Add a new fragment to be displayed
      *
      * @param fragment to add
-     * @param title    of the frament
+     * @param title    of the fragment
      */
     public void addFragment(Fragment fragment, String title) {
         fragments.add(fragment);

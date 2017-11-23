@@ -21,21 +21,23 @@ import java.util.List;
 public class ArticleListFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<List<Article>> {
 
-    public static final String LOG_TAG = ArticleListFragment.class.getName();
-    public static final String CATEGORY = "section";
+    public static final String SECTION = "section";
     private static final int ARTICLE_LOADER_ID = 1;
+
     private String sectionId;
     private ArticleRecyclerAdapter adapter;
 
     /**
-     * Return a new instance of AttrListFragment
+     * Return a new instance of ArticleListFragment
      *
      * @param section of attraction to display
      * @return new Attr list instance
      */
     public static ArticleListFragment newInstance(Section section) {
         Bundle args = new Bundle();
-        args.putString(CATEGORY, section.getId());
+
+        // add the section ID in the bundle
+        args.putString(SECTION, section.getId());
         ArticleListFragment fragment = new ArticleListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -54,7 +56,8 @@ public class ArticleListFragment extends Fragment
         Bundle arguments = getArguments();
 
         if (arguments != null) {
-            this.sectionId = arguments.getString(CATEGORY);
+            // load the section ID so we know which articles to display
+            this.sectionId = arguments.getString(SECTION);
         }
     }
 
@@ -79,12 +82,12 @@ public class ArticleListFragment extends Fragment
 
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 
-        this.adapter = new ArticleRecyclerAdapter(new ArrayList<Article>());
+        this.adapter = new ArticleRecyclerAdapter(new ArrayList<>());
 
         // attach the adapter responsible for creating the attraction list
         recyclerView.setAdapter(this.adapter);
 
-        if (Util.hasInternetConnection(getContext())) {
+        if (QueryUtils.hasInternetConnection(getContext())) {
             LoaderManager loaderManager = getLoaderManager();
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         }
@@ -92,11 +95,24 @@ public class ArticleListFragment extends Fragment
         return recyclerView;
     }
 
+    /**
+     * Return a new {@link ArticleLoader} to load articles in this section
+     *
+     * @param id   of the loader
+     * @param args {@link Bundle} data
+     * @return List of {@link Article} objects
+     */
     @Override
     public Loader<List<Article>> onCreateLoader(int id, Bundle args) {
         return new ArticleLoader(getContext(), sectionId);
     }
 
+    /**
+     * Display the articles
+     *
+     * @param loader   loader
+     * @param articles list of {@link Article} objects
+     */
     @Override
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
         if (articles != null && articles.size() > 0) {
@@ -104,6 +120,11 @@ public class ArticleListFragment extends Fragment
         }
     }
 
+    /**
+     * clear data when the loader has reset
+     *
+     * @param loader loader
+     */
     @Override
     public void onLoaderReset(Loader<List<Article>> loader) {
         this.adapter.clear();

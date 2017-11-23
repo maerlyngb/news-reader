@@ -1,5 +1,9 @@
 package io.maerlyn.newsreader;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,57 +21,118 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Created by maerlyn on 22/11/17.
+ * A set of static methods to retrieve data from given URLs
+ *
+ * @author Maerlyn Broadbent
  */
-
 public final class QueryUtils {
-
-    /** Tag for the log messages */
+    // used for log messages
     public static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
-    /**
-     * Create a private constructor because no one should ever create a {@link QueryUtils} object.
-     * This class is only meant to hold static variables and methods, which can be accessed
-     * directly from the class name QueryUtils (and an object instance of QueryUtils is not needed).
-     */
+    // private constructor to prevent instantiations
     private QueryUtils() {
     }
 
+    /**
+     * Return a list of {@link Article} objects from a given URL
+     *
+     * @param requestUrl URL to query
+     * @return list of {@link Article} objects
+     */
     public static List<Article> fetchArticleData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
-        // Perform HTTP request to the URL and receive a JSON response back
         String jsonResponse = null;
         try {
+            // get json string from url
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
 
-        // Return the {@link Event}
-        return extractArticles(jsonResponse);
+        if (jsonResponse == null || TextUtils.isEmpty(jsonResponse)) {
+            // json string is empty so we shouldn't try to parse it
+            Log.e(LOG_TAG, "Empty JSON string");
+            return null;
+        } else {
+            try {
+                // try and convert the json string to a JSONObject
+                JSONObject raw = new JSONObject(jsonResponse);
+                JSONObject response = raw.getJSONObject("response");
+
+                // have to got a good response from the serve?
+                if (response.getString("status").equals("ok")) {
+
+                    // get a JSONArray of sections
+                    JSONArray sections = response.getJSONArray("results");
+
+                    // return a list of section objects
+                    return extractArticles(sections);
+                }
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "JSONExeption", e);
+            }
+        }
+
+        // if we get here, something has gone wrong
+        return null;
     }
 
+    /**
+     * Retun a list of {@link Section} objects from a given URL
+     *
+     * @param requestUrl URL to query
+     * @return list of {@link Section} objects
+     */
     public static List<Section> fetchSectionData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
-        // Perform HTTP request to the URL and receive a JSON response back
         String jsonResponse = null;
         try {
+            // get json string from url
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
 
-        // Return the {@link Event}
-        return extractSections(jsonResponse);
+        if (jsonResponse == null || TextUtils.isEmpty(jsonResponse)) {
+            // json string is empty so we shouldn't try to parse it
+            Log.e(LOG_TAG, "Empty JSON string");
+            return null;
+        } else {
+            try {
+                // try and convert the json string to a JSONObject
+                JSONObject raw = new JSONObject(jsonResponse);
+                JSONObject response = raw.getJSONObject("response");
+
+                // have to got a good response from the serve?
+                if (response.getString("status").equals("ok")) {
+
+                    // get a JSONArray of sections
+                    JSONArray sections = response.getJSONArray("results");
+
+                    // return a list of section objects
+                    return getSections(sections);
+                }
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "JSONExeption", e);
+            }
+        }
+
+        // if we get here, something has gone wrong
+        return null;
     }
 
     /**
-     * Make an HTTP request to the given URL and return a String as the response.
+     * Return string response from a server  with a given url
+     *
+     * @param url of the server to query
+     * @return String response
+     * @throws IOException error getting the data
      */
     private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
@@ -95,7 +160,7 @@ public final class QueryUtils {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, "IOException while getting data from the server ", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -125,33 +190,36 @@ public final class QueryUtils {
         return output.toString();
     }
 
+
     /**
-     * Returns new URL object from the given string URL.
+     * Returns a {@link URL} object for a given url string
+     *
+     * @param urlString string to convert to {@link URL}
+     * @return {@link URL}
      */
-    private static URL createUrl(String stringUrl) {
+    private static URL createUrl(String urlString) {
         URL url = null;
         try {
-            url = new URL(stringUrl);
+            url = new URL(urlString);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Error with creating URL ", e);
+            Log.e(LOG_TAG, "MalformedURLException ", e);
         }
         return url;
     }
 
     /**
-     * Return a list of {@link Article} objects that has been built up from
-     * parsing a JSON response.
+     * Return a list of {@link Article} objects from a given JSON string
+     *
+     * @param results containing sections from the server
+     * @return list of {@link Article objects}
      */
-    public static ArrayList<Article> extractArticles(String jsonString) {
+    public static ArrayList<Article> extractArticles(JSONArray results) {
 
         ArrayList<Article> articles = new ArrayList<>();
         try {
-
-            JSONObject raw = new JSONObject(jsonString);
-            JSONObject response = raw.getJSONObject("response");
-            JSONArray results = response.getJSONArray("results");
-
             for (int i = 0; i < results.length(); i++) {
+                // create Section object for each item in the array
+                // and add it to the sections ArrayList
                 JSONObject article = results.getJSONObject(i);
                 articles.add(new Article(article.getString("sectionName"),
                         article.getString("webTitle"),
@@ -160,25 +228,26 @@ public final class QueryUtils {
             }
 
         } catch (JSONException e) {
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e(LOG_TAG, "JSONException ", e);
         }
 
         // Return the list of articles
         return articles;
     }
 
-
-
-    private static List<Section> extractSections(String jsonString) {
-
+    /**
+     * Return a list of {@link Section} objects from a given JSON string
+     *
+     * @param results containing sections from the server
+     * @return list of {@link Section objects}
+     */
+    private static List<Section> getSections(JSONArray results) {
         ArrayList<Section> sections = new ArrayList<>();
+
         try {
-
-            JSONObject raw = new JSONObject(jsonString);
-            JSONObject response = raw.getJSONObject("response");
-            JSONArray results = response.getJSONArray("results");
-
             for (int i = 0; i < results.length(); i++) {
+                // create Section object for each item in the array
+                // and add it to the sections ArrayList
                 JSONObject article = results.getJSONObject(i);
                 sections.add(new Section(article.getString("id"),
                         article.getString("webTitle"),
@@ -187,11 +256,20 @@ public final class QueryUtils {
             }
 
         } catch (JSONException e) {
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e(LOG_TAG, "JSONException ", e);
         }
 
-        // Return the list of articles
+        // Return the list of sections
         return sections;
+    }
+
+    public static boolean hasInternetConnection(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 }
