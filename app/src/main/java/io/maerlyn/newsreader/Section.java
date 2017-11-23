@@ -8,65 +8,32 @@ import java.util.Map;
  *
  * @author Maerlyn Broadbent
  */
-public enum Category {
-    ALL(1),
-    ABOUT(2),
-    DESIGN(3),
-    AUSTRALIA(4),
-    BUSINESS(5),
-    BOOKS(6),
-    OPINION(7),
-    COMMUNITY(8),
-    CULTURE(9),
-    EDUCATION(10),
-    ENVIRONMENT(11),
-    EXTRA(12),
-    FILM(13),
-    FOOTBALL(14),
-    GAMES(15)
-    ;
+public class Section {
+    private String id;
+    private String webTitle;
+    private String webUrl;
+    private String apiUrl;
 
-    private static Map map = new HashMap<>();
-
-    // static initialiser to create a lookup map
-    static {
-        for (Category attrType : Category.values()) {
-            map.put(attrType.value, attrType);
-        }
+    public Section (String id, String webTitle, String webUrl, String apiUrl){
+        this.id = id;
+        this.webTitle = webTitle;
+        this.webUrl = webUrl;
+        this.apiUrl = apiUrl;
     }
 
-    private int value;
-
-    /**
-     * assigns values to the types
-     *
-     * @param value to assign
-     */
-    Category(int value) {
-        this.value = value;
+    public String getId() {
+        return id;
     }
 
-    /**
-     * Returns the AttrType for a given value
-     *
-     * @param value of the type to lookup
-     * @return AttrType
-     */
-    public static Category valueOf(int value) {
-        return (Category) map.get(value);
+    public String getWebTitle() {
+        return webTitle;
     }
 
-    /**
-     * returns the value of an AttrType
-     *
-     * @return value of an AttrType
-     */
-    public int getValue() {
-        return value;
+    public String getWebUrl() {
+        return webUrl;
     }
 
-    public String toString(){
-        return this.name();
+    public String getApiUrl() {
+        return apiUrl;
     }
-
 }

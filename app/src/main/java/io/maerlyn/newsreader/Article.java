@@ -5,13 +5,31 @@ package io.maerlyn.newsreader;
  */
 
 public class Article {
-    public String headline;
+    private String headline;
+    private String sectionName;
+    private String webPublicationDate;
+    private String webUrl;
 
-    public Article (String headline){
+    public Article(String sectionName, String headline, String webPublicationDate, String webUrl) {
+        this.sectionName = sectionName;
         this.headline = headline;
+        this.webPublicationDate = webPublicationDate;
+        this.webUrl = webUrl;
     }
 
     public String getHeadline() {
         return headline;
+    }
+
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public String getWebPublicationDate() {
+        return webPublicationDate;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
     }
 }

@@ -34,7 +34,7 @@ public final class QueryUtils {
     private QueryUtils() {
     }
 
-    public static List<Article> fetchEarthquakeData(String requestUrl) {
+    public static List<Article> fetchArticleData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
@@ -48,6 +48,22 @@ public final class QueryUtils {
 
         // Return the {@link Event}
         return extractArticles(jsonResponse);
+    }
+
+    public static List<Section> fetchSectionData(String requestUrl) {
+        // Create URL object
+        URL url = createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error closing input stream", e);
+        }
+
+        // Return the {@link Event}
+        return extractSections(jsonResponse);
     }
 
     /**
@@ -137,7 +153,10 @@ public final class QueryUtils {
 
             for (int i = 0; i < results.length(); i++) {
                 JSONObject article = results.getJSONObject(i);
-                articles.add(new Article(article.getString("webTitle")));
+                articles.add(new Article(article.getString("sectionName"),
+                        article.getString("webTitle"),
+                        article.getString("webPublicationDate"),
+                        article.getString("webUrl")));
             }
 
         } catch (JSONException e) {
@@ -146,6 +165,33 @@ public final class QueryUtils {
 
         // Return the list of articles
         return articles;
+    }
+
+
+
+    private static List<Section> extractSections(String jsonString) {
+
+        ArrayList<Section> sections = new ArrayList<>();
+        try {
+
+            JSONObject raw = new JSONObject(jsonString);
+            JSONObject response = raw.getJSONObject("response");
+            JSONArray results = response.getJSONArray("results");
+
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject article = results.getJSONObject(i);
+                sections.add(new Section(article.getString("id"),
+                        article.getString("webTitle"),
+                        article.getString("webUrl"),
+                        article.getString("apiUrl")));
+            }
+
+        } catch (JSONException e) {
+            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+        }
+
+        // Return the list of articles
+        return sections;
     }
 
 }

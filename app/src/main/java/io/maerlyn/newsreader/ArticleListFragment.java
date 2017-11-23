@@ -1,19 +1,16 @@
 package io.maerlyn.newsreader;
 
-import android.app.LoaderManager;
-import android.content.Context;
-import android.content.Loader;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,20 +22,20 @@ public class ArticleListFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<List<Article>> {
 
     public static final String LOG_TAG = ArticleListFragment.class.getName();
+    public static final String CATEGORY = "section";
     private static final int ARTICLE_LOADER_ID = 1;
-
-    public static final String CATEGORY = "category";
-    private Category type;
+    private String sectionId;
+    private ArticleRecyclerAdapter adapter;
 
     /**
      * Return a new instance of AttrListFragment
      *
-     * @param category of attraction to display
+     * @param section of attraction to display
      * @return new Attr list instance
      */
-    public static ArticleListFragment newInstance(Category category) {
+    public static ArticleListFragment newInstance(Section section) {
         Bundle args = new Bundle();
-        args.putInt(CATEGORY, category.getValue());
+        args.putString(CATEGORY, section.getId());
         ArticleListFragment fragment = new ArticleListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -57,9 +54,7 @@ public class ArticleListFragment extends Fragment
         Bundle arguments = getArguments();
 
         if (arguments != null) {
-            int typeVal = arguments.getInt(CATEGORY);
-            // the type of attraction list to display
-            type = Category.valueOf(typeVal);
+            this.sectionId = arguments.getString(CATEGORY);
         }
     }
 
@@ -80,14 +75,16 @@ public class ArticleListFragment extends Fragment
                 R.layout.article_list, container, false);
 
         // improves performance when items don't change size
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 
-        // attach the adapter responsible for creating the attraction list
-        recyclerView.setAdapter(new ArticleRecyclerAdapter(getData()));
+        this.adapter = new ArticleRecyclerAdapter(new ArrayList<Article>());
 
-        if (hasInternetConnection()){
+        // attach the adapter responsible for creating the attraction list
+        recyclerView.setAdapter(this.adapter);
+
+        if (Util.hasInternetConnection(getContext())) {
             LoaderManager loaderManager = getLoaderManager();
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         }
@@ -95,48 +92,21 @@ public class ArticleListFragment extends Fragment
         return recyclerView;
     }
 
-    private boolean hasInternetConnection() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
-
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
-    /**
-     * Load attraction data
-     *
-     * @return list of attractions
-     */
-    private List<Article> getData() {
-        switch (type) {
-            case cat1:
-                return DataUtil.getCat1();
-            case cat2:
-                return DataUtil.getCat2();
-            case cat3:
-                return DataUtil.getCat3();
-            case cat4:
-                return DataUtil.getCat4();
-        }
-        return null;
-    }
-
     @Override
     public Loader<List<Article>> onCreateLoader(int id, Bundle args) {
-        Log.i(LOG_TAG, "Create Loader");
-        return new ArticleLoader(getContext(), "http://content.guardianapis.com/search?q=debates&api-key=test");
+        return new ArticleLoader(getContext(), sectionId);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Article>> loader, List<Article> earthquakes) {
-        Log.i(LOG_TAG, "Load Finished");
+    public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
+        if (articles != null && articles.size() > 0) {
+            this.adapter.newDataSet(articles);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<List<Article>> loader) {
-        Log.i(LOG_TAG, "Loader Reset");
+        this.adapter.clear();
     }
 
 }

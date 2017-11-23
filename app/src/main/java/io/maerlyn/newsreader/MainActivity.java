@@ -1,5 +1,7 @@
 package io.maerlyn.newsreader;
 
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -11,9 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<List<Section>>  {
 
     private NavDrawerHandler navDrawerHandler;
+    private static final int SECTION_LOADER_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +34,13 @@ public class MainActivity extends AppCompatActivity {
         this.navDrawerHandler = new NavDrawerHandler(this);
 
         setupNavigationView(toolbar);
-        setupTabbedContent();
+
+        if (Util.hasInternetConnection(this)) {
+            LoaderManager loaderManager = getLoaderManager();
+            loaderManager.initLoader(SECTION_LOADER_ID, null, this);
+        }
+
+        //setupTabbedContent();
     }
 
     /**
@@ -53,17 +66,16 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Setup tabbed attraction tabs and content
      */
-    private void setupTabbedContent() {
+    private void setupTabbedContent(List<Section> sections) {
         ViewPager viewPager = findViewById(R.id.viewpager);
 
         if (viewPager != null) {
             ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
 
             // each fragment is one of the attraction lists
-            adapter.addFragment(ArticleListFragment.newInstance(Category.cat1), "Cat 1");
-            adapter.addFragment(ArticleListFragment.newInstance(Category.cat2), "Cat 2");
-            adapter.addFragment(ArticleListFragment.newInstance(Category.cat3), "Cat 3");
-            adapter.addFragment(ArticleListFragment.newInstance(Category.cat4), "Cat 4");
+            for(Section section : sections){
+                adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
+            }
 
             viewPager.setAdapter(adapter);
 
@@ -118,5 +130,22 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public Loader<List<Section>> onCreateLoader(int id, Bundle args) {
+        return new GuardianApi(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Section>> loader, List<Section> sections) {
+        if (sections != null && sections.size() > 0) {
+            setupTabbedContent(sections);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Section>> loader) {
+        //this.adapter.clear();
     }
 }

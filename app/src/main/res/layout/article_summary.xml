@@ -4,9 +4,39 @@
     style="@style/ArticleSummaryItem"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <!-- Attraction Name -->
-    <TextView
-        android:id="@+id/article_headline"
-        style="@style/FullWidth" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_medium"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/article_title"
+            android:textColor="#212121"
+            android:textSize="@dimen/sp_medium"
+            style="@style/FullWidth" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp_medium"
+            android:layout_marginTop="@dimen/dp_medium"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/article_section"
+                android:textColor="@color/colorAccent"
+                android:layout_weight="1"
+                style="@style/FullWidth" />
+            <TextView
+                android:id="@+id/article_date"
+                android:gravity="right"
+                android:layout_weight="1"
+                style="@style/FullWidth" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

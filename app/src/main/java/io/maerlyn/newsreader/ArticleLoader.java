@@ -12,11 +12,12 @@ import java.util.List;
 public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
 
     private final String LOG_TAG = ArticleLoader.class.getName();
-    String url;
 
-    public ArticleLoader(Context context, String url) {
+    String sectionId;
+
+    public ArticleLoader(Context context, String sectionId) {
         super(context);
-        this.url = url;
+        this.sectionId = sectionId;
     }
 
     @Override
@@ -26,10 +27,8 @@ public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
 
     @Override
     public List<Article> loadInBackground() {
-        if (url == null) {
-            return null;
-        }
-
-        return QueryUtils.fetchEarthquakeData(url);
+        GuardianApi api = new GuardianApi(getContext());
+        api.setCategory(sectionId);
+        return QueryUtils.fetchArticleData(api.getUrl());
     }
 }
