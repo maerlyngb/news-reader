@@ -9,10 +9,22 @@ import java.util.Map;
  * @author Maerlyn Broadbent
  */
 public enum Category {
-    cat1(1),
-    cat2(2),
-    cat3(3),
-    cat4(4);
+    ALL(1),
+    ABOUT(2),
+    DESIGN(3),
+    AUSTRALIA(4),
+    BUSINESS(5),
+    BOOKS(6),
+    OPINION(7),
+    COMMUNITY(8),
+    CULTURE(9),
+    EDUCATION(10),
+    ENVIRONMENT(11),
+    EXTRA(12),
+    FILM(13),
+    FOOTBALL(14),
+    GAMES(15)
+    ;
 
     private static Map map = new HashMap<>();
 
@@ -51,6 +63,10 @@ public enum Category {
      */
     public int getValue() {
         return value;
+    }
+
+    public String toString(){
+        return this.name();
     }
 
 }
