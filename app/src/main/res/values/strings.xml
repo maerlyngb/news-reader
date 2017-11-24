@@ -15,6 +15,8 @@
     <string name="no_internet_connection">No internet connection.</string>
     <string name="no_data">Could not load data.</string>
 
+    <string name="settings_menu_option">Settings</string>
+
     <!-- Guardian API strings -->
     <string name="base_url">http://content.guardianapis.com/</string>
 
