@@ -13,12 +13,10 @@ import java.util.List;
  */
 public class GuardianApi extends AsyncTaskLoader<List<Section>> {
     private final String baseUrl;
-    private Context context;
     private HashMap<String, String> queryParams = new HashMap<>();
 
     public GuardianApi(Context context) {
         super(context);
-        this.context = context;
 
         // base api url
         this.baseUrl = context.getString(R.string.base_url);
@@ -36,32 +34,33 @@ public class GuardianApi extends AsyncTaskLoader<List<Section>> {
 
         for (String key : queryParams.keySet()) {
             if (params.length() > 0) {
-                params.append(context.getString(R.string.query_param_delim));
+                params.append(getContext().getString(R.string.query_param_delim));
             }
 
             params.append(key);
-            params.append(context.getString(R.string.key_val_delim));
+            params.append(getContext().getString(R.string.key_val_delim));
             params.append(queryParams.get(key));
         }
 
-        return baseUrl + context.getString(R.string.search_query_method) + context.getString(R.string.query_string_prefix) + params.toString();
+        return baseUrl + getContext().getString(R.string.search_query_method) +
+                getContext().getString(R.string.query_string_prefix) + params.toString();
     }
 
     private void loadQueryParams() {
         // which extra fields we want in the returned data
         queryParams.put(
-                context.getString(R.string.show_fields_key),
-                context.getString(R.string.show_fields_val));
+                getContext().getString(R.string.show_fields_key),
+                getContext().getString(R.string.show_fields_val));
 
         // how many results we want
         queryParams.put(
-                context.getString(R.string.page_size_key),
-                context.getString(R.string.page_size_val));
+                getContext().getString(R.string.page_size_key),
+                getContext().getString(R.string.page_size_val));
     }
 
     // set the news category that we want to query
     public void setCategory(String sectionId) {
-        queryParams.put(context.getString(R.string.section_key), sectionId);
+        queryParams.put(getContext().getString(R.string.section_key), sectionId);
     }
 
     /**
@@ -80,13 +79,13 @@ public class GuardianApi extends AsyncTaskLoader<List<Section>> {
     @Override
     public List<Section> loadInBackground() {
         // add api key to query string
-        String apiParam = context.getString(R.string.api_key_key) +
-                context.getString(R.string.key_val_delim) +
-                queryParams.get(context.getString(R.string.api_key_key));
+        String apiParam = getContext().getString(R.string.api_key_key) +
+                getContext().getString(R.string.key_val_delim) +
+                queryParams.get(getContext().getString(R.string.api_key_key));
 
         // get data from server
         return QueryUtils.fetchSectionData(baseUrl +
-                context.getString(R.string.section_query_method) +
-                context.getString(R.string.query_string_prefix) + apiParam);
+                getContext().getString(R.string.section_query_method) +
+                getContext().getString(R.string.query_string_prefix) + apiParam);
     }
 }
