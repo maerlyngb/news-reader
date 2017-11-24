@@ -39,6 +39,6 @@ public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
 
         // set the section of articles we want to load
         api.setCategory(sectionId);
-        return QueryUtils.fetchArticleData(api.getUrl());
+        return QueryUtils.fetchArticleData(api.getQueryUrl());
     }
 }

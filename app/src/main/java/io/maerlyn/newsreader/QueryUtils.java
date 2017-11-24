@@ -220,11 +220,32 @@ public final class QueryUtils {
             for (int i = 0; i < results.length(); i++) {
                 // create Section object for each item in the array
                 // and add it to the sections ArrayList
-                JSONObject article = results.getJSONObject(i);
-                articles.add(new Article(article.getString("sectionName"),
-                        article.getString("webTitle"),
-                        article.getString("webPublicationDate"),
-                        article.getString("webUrl")));
+                JSONObject articleJson = results.getJSONObject(i);
+                Article article = new Article();
+                article.setSectionName(articleJson.getString("sectionName"));
+                article.setHeadline(articleJson.getString("webTitle"));
+                article.setWebPublicationDate(articleJson.getString("webPublicationDate"));
+                article.setWebUrl(articleJson.getString("webUrl"));
+
+                if (articleJson.has("fields")) {
+                    JSONObject fields = articleJson.getJSONObject("fields");
+
+                    // Article Author
+                    if (fields != null) {
+                        if (fields.has("byline")) {
+                            article.setAuthor(fields.getString("byline"));
+                        }
+                    }
+
+                    // Article Thumbnail
+                    if (fields != null) {
+                        if (fields.has("thumbnail")) {
+                            article.setThumbnailUrl(fields.getString("thumbnail"));
+                        }
+                    }
+                }
+
+                articles.add(article);
             }
 
         } catch (JSONException e) {
@@ -249,6 +270,13 @@ public final class QueryUtils {
                 // create Section object for each item in the array
                 // and add it to the sections ArrayList
                 JSONObject article = results.getJSONObject(i);
+
+                String articleId = article.getString("id");
+
+                if (article.getString("id").equals("about")){
+                    continue;
+                }
+
                 sections.add(new Section(article.getString("id"),
                         article.getString("webTitle"),
                         article.getString("webUrl"),

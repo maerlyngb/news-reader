@@ -2,14 +2,21 @@ package io.maerlyn.newsreader;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -53,7 +60,23 @@ public class ArticleRecyclerAdapter
             // display article data
             final Article article = articles.get(index);
             holder.title.setText(article.getHeadline());
-            holder.section.setText(article.getSectionName());
+
+            // display an author if we have one
+            String author = article.getAuthor();
+            if (author == null || TextUtils.isEmpty(author)) {
+                holder.author.setVisibility(View.GONE);
+            } else {
+                holder.author.setText(article.getAuthor());
+            }
+
+            // download and display an article thumbnail if we have one
+            String thumbnailUrl = article.getThumbnailUrl();
+            if (thumbnailUrl == null || TextUtils.isEmpty(thumbnailUrl)) {
+                holder.thumbnail.setVisibility(View.GONE);
+            } else {
+                new DownloadImageTask(holder.thumbnail).execute(thumbnailUrl);
+            }
+
             holder.date.setText(article.getWebPublicationDate());
 
             // open the article url when the user taps on it's card
@@ -117,17 +140,45 @@ public class ArticleRecyclerAdapter
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         public final CardView cardView;
+        public final ImageView thumbnail;
         public final TextView title;
-        public final TextView section;
+        public final TextView author;
         public final TextView date;
 
         public ViewHolder(View view) {
             super(view);
             this.view = view;
             cardView = view.findViewById(R.id.card_view);
+            thumbnail = view.findViewById(R.id.article_thumbnail);
             title = view.findViewById(R.id.article_title);
-            section = view.findViewById(R.id.article_section);
+            author = view.findViewById(R.id.article_author);
             date = view.findViewById(R.id.article_date);
+        }
+    }
+
+    // https://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView imageView;
+
+        public DownloadImageTask(ImageView imageView) {
+            this.imageView = imageView;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String url = urls[0];
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(url).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);
         }
     }
 

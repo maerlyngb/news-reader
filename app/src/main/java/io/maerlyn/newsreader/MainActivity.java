@@ -2,10 +2,7 @@ package io.maerlyn.newsreader;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Context;
 import android.content.Loader;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -16,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -30,10 +30,20 @@ public class MainActivity extends AppCompatActivity
     private static final int SECTION_LOADER_ID = 0;
     private NavDrawerHandler navDrawerHandler;
 
+    private TextView noDataView;
+    ProgressBar spinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // displayed to the user when internet is not available
+        // or of we get no data from the server
+        this.noDataView = findViewById(R.id.no_tabs);
+
+        // notify the user that we're getting data from the server
+        this.spinner = findViewById(R.id.tab_spinner);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -44,12 +54,18 @@ public class MainActivity extends AppCompatActivity
         // setup side navigation drawer
         setupNavigationView(toolbar);
 
+
         if (QueryUtils.hasInternetConnection(this)) {
 
             // if we have internet connectivity, start the loader to
             // get a list of news sections from the server
             LoaderManager loaderManager = getLoaderManager();
             loaderManager.initLoader(SECTION_LOADER_ID, null, this);
+
+        } else {
+            this.spinner.setVisibility(View.GONE);
+            this.noDataView.setVisibility(View.VISIBLE);
+            this.noDataView.setText(getString(R.string.no_internet_connection));
         }
     }
 
@@ -84,11 +100,12 @@ public class MainActivity extends AppCompatActivity
         if (viewPager != null) {
             ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
 
-            // each fragment is one of the attraction lists
+            // setup a fragment for each news section
             for (Section section : sections) {
                 adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
             }
 
+            // add all news section fragments as tabs
             viewPager.setAdapter(adapter);
 
             // display tabbed content
@@ -164,6 +181,11 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onLoadFinished(Loader<List<Section>> loader, List<Section> sections) {
+
+        // we have sections!
+        ProgressBar spinner = findViewById(R.id.tab_spinner);
+        spinner.setVisibility(View.GONE);
+
         if (sections != null && sections.size() > 0) {
             setupTabbedContent(sections);
         }

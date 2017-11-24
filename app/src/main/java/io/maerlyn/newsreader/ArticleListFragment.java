@@ -2,6 +2,8 @@ package io.maerlyn.newsreader;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +24,17 @@ import java.util.List;
  * @author Maerlyn Broadbent
  */
 public class ArticleListFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<List<Article>> {
+        implements LoaderCallbacks<List<Article>> {
 
     public static final String SECTION = "section";
-    private static final int ARTICLE_LOADER_ID = 1;
 
+    // generate a random loader id so each fragment is different
+    private static int ARTICLE_LOADER_ID = Integer.MIN_VALUE + (int) (Math.random() * Integer.MAX_VALUE);
+
+    Context context;
     private String sectionId;
     private ArticleRecyclerAdapter adapter;
+    private ProgressBar spinner;
 
     /**
      * Return a new instance of ArticleListFragment
@@ -73,26 +82,38 @@ public class ArticleListFragment extends Fragment
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        // used to display a scrolling list of attractions
-        RecyclerView recyclerView = (RecyclerView) inflater.inflate(
-                R.layout.article_list, container, false);
+        RelativeLayout layout = (RelativeLayout) inflater.inflate(
+                R.layout.article_list, container, false
+        );
 
-        // improves performance when items don't change size
-        recyclerView.setHasFixedSize(false);
+        // save a reference to context so we don't have to perform needless function calls
+        this.context = layout.getContext();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        // loading animation
+        spinner = new ProgressBar(context);
+        spinner.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        // display loading animation
+        layout.addView(spinner);
+
+        // Recycler view to display the list of articles
+        RecyclerView recyclerView = layout.findViewById(R.id.article_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         this.adapter = new ArticleRecyclerAdapter(new ArrayList<>());
 
         // attach the adapter responsible for creating the attraction list
         recyclerView.setAdapter(this.adapter);
 
-        if (QueryUtils.hasInternetConnection(getContext())) {
+        if (QueryUtils.hasInternetConnection(context)) {
+            // load news article data as a background process
             LoaderManager loaderManager = getLoaderManager();
             loaderManager.initLoader(ARTICLE_LOADER_ID, null, this);
         }
 
-        return recyclerView;
+        return layout;
     }
 
     /**
@@ -104,7 +125,8 @@ public class ArticleListFragment extends Fragment
      */
     @Override
     public Loader<List<Article>> onCreateLoader(int id, Bundle args) {
-        return new ArticleLoader(getContext(), sectionId);
+        spinner.setVisibility(View.VISIBLE);
+        return new ArticleLoader(context, sectionId);
     }
 
     /**
@@ -118,6 +140,7 @@ public class ArticleListFragment extends Fragment
         if (articles != null && articles.size() > 0) {
             this.adapter.newDataSet(articles);
         }
+        this.spinner.setVisibility(View.GONE);
     }
 
     /**

@@ -110,23 +110,81 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-    <!-- Main Content -->
-    <style name="ArticleList" parent="MatchParent">
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    <style name="MainContentLayout" parent="MatchParent">
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="TabLoadingSpinner" parent="@style/Widget.AppCompat.ProgressBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <style name="TabNoData" parent="WrapContent">
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <!-- Individual Article -->
+    <style name="ArticleSummaryLayout" parent="FullWidth">
+        <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="ArticleSummaryItem" parent="FullWidth">
-        <item name="android:layout_marginLeft">@dimen/dp_medium</item>
-        <item name="android:layout_marginRight">@dimen/dp_medium</item>
-        <item name="android:layout_marginTop">@dimen/dp_medium</item>
+        <item name="android:layout_marginLeft">@dimen/dp_small</item>
+        <item name="android:layout_marginRight">@dimen/dp_small</item>
+        <item name="android:layout_marginTop">@dimen/dp_small</item>
         <item name="cardElevation">2dp</item>
         <item name="cardUseCompatPadding">true</item>
         <item name="cardCornerRadius">2dp</item>
         <item name="android:clickable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
     </style>
 
-    <style name="ArticleSummaryItemContents" parent="FullWidth">
+    <style name="ArticleSummaryThumbnail" parent="WrapContent">
+        <item name="android:layout_gravity">start</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="ArticleSummaryTextLayout" parent="MatchParent">
+        <item name="android:layout_width">@dimen/dp_zero</item>
+        <item name="android:layout_marginLeft">@dimen/dp_small</item>
+        <item name="android:layout_marginRight">@dimen/dp_small</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ArticleSummaryTitle" parent="FullWidth">
+        <item name="android:layout_marginBottom">@dimen/dp_small</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textSize">@dimen/sp_medium</item>
+    </style>
+
+    <style name="ArticleSummaryDetailLayout" parent="FullWidth">
+        <item name="android:layout_marginTop">@dimen/dp_small</item>
+        <item name="android:layout_marginBottom">@dimen/dp_small</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:textSize">@dimen/sp_medium</item>
+    </style>
+
+    <style name="ArticleSummaryAuthor" parent="FullWidth">
+        <item name="android:layout_weight">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="ArticleSummaryDate" parent="FullWidth">
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">right</item>
+        <item name="android:maxLines">1</item>
     </style>
 
 </resources>
