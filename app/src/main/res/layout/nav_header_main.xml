@@ -3,19 +3,19 @@
     style="@style/SideNavHeaderLayout">
 
     <!-- Side Nav Header Image -->
-    <!--<ImageView-->
-        <!--android:id="@+id/side_nav_header_image"-->
-        <!--style="@style/SideNavHeaderImage"-->
-        <!--android:contentDescription="@string/side_navigation_header_image" />-->
+    <ImageView
+        android:id="@+id/side_nav_header_image"
+        style="@style/SideNavHeaderImage"
+        android:contentDescription="@string/side_navigation_header_image" />
 
     <!-- Side Nav Header Title -->
-    <!--<TextView-->
-        <!--android:id="@+id/side_nav_header_title"-->
-        <!--style="@style/SideNavHeaderTitle" />-->
+    <TextView
+        android:id="@+id/side_nav_header_title"
+        style="@style/SideNavHeaderTitle" />
 
     <!-- Side Nav Header Subtitle -->
-    <!--<TextView-->
-        <!--android:id="@+id/side_nav_header_subtitle"-->
-        <!--style="@style/SideNavHeaderSubtitle" />-->
+    <TextView
+        android:id="@+id/side_nav_header_subtitle"
+        style="@style/SideNavHeaderSubtitle" />
 
 </LinearLayout>
