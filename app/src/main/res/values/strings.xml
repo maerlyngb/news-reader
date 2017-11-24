@@ -35,4 +35,5 @@
 
     <string name="page_size_key">page-size</string>
     <string name="page_size_val">10</string>
+    <string name="settings_menu_option">Settings</string>
 </resources>

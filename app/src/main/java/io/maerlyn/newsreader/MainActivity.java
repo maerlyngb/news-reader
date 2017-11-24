@@ -28,10 +28,10 @@ public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<List<Section>> {
 
     private static final int SECTION_LOADER_ID = 0;
-    private NavDrawerHandler navDrawerHandler;
-
-    private TextView noDataView;
     ProgressBar spinner;
+    private NavDrawerHandler navDrawerHandler;
+    private TextView noDataView;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         // listen for nav items being clicked
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        this.navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this.navDrawerHandler);
     }
 
@@ -100,9 +100,16 @@ public class MainActivity extends AppCompatActivity
         if (viewPager != null) {
             ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
 
+            // menu object for adding sections to the side nav
+            Menu menu = this.navigationView.getMenu();
+            Menu sectionMenu = menu.addSubMenu("Sections");
+            int groupId = 1;
+
             // setup a fragment for each news section
-            for (Section section : sections) {
+            for (int i = 0; i < sections.size(); i++) {
+                Section section = sections.get(i);
                 adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
+                sectionMenu.add(groupId, i, i, section.getWebTitle());
             }
 
             // add all news section fragments as tabs

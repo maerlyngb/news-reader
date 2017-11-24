@@ -1,8 +1,10 @@
 package io.maerlyn.newsreader;
 
 import android.app.Activity;
+import android.app.TabActivity;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
@@ -30,21 +32,8 @@ public class NavDrawerHandler implements NavigationView.OnNavigationItemSelected
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+        ViewPager pager = activity.findViewById(R.id.viewpager);
+        pager.setCurrentItem(item.getItemId());
 
         closeDrawer();
 
