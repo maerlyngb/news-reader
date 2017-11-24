@@ -2,6 +2,7 @@ package io.maerlyn.newsreader;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.net.Uri;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,14 +13,14 @@ import java.util.List;
  * @author Maerlyn Broadbent
  */
 public class GuardianApi extends AsyncTaskLoader<List<Section>> {
-    private final String baseUrl;
+    private final Uri apiUrl;
     private HashMap<String, String> queryParams = new HashMap<>();
+    private String sectionId;
 
     public GuardianApi(Context context) {
         super(context);
 
-        // base api url
-        this.baseUrl = context.getString(R.string.base_url);
+        this.apiUrl = Uri.parse(context.getString(R.string.base_url));
 
         // make sure the api key is in the query string
         queryParams.put(
@@ -28,39 +29,34 @@ public class GuardianApi extends AsyncTaskLoader<List<Section>> {
     }
 
     public String getQueryUrl() {
-        loadQueryParams();
+        Context c = getContext();
 
-        StringBuilder params = new StringBuilder();
+        Uri.Builder uriBuilder = this.apiUrl.buildUpon();
 
-        for (String key : queryParams.keySet()) {
-            if (params.length() > 0) {
-                params.append(getContext().getString(R.string.query_param_delim));
-            }
+        uriBuilder.appendPath(c.getString(R.string.search_query_method));
 
-            params.append(key);
-            params.append(getContext().getString(R.string.key_val_delim));
-            params.append(queryParams.get(key));
-        }
+        uriBuilder.appendQueryParameter(
+                c.getString(R.string.api_key_key),
+                c.getString(R.string.api_key_val));
 
-        return baseUrl + getContext().getString(R.string.search_query_method) +
-                getContext().getString(R.string.query_string_prefix) + params.toString();
-    }
+        uriBuilder.appendQueryParameter(
+                c.getString(R.string.section_key),
+                this.sectionId);
 
-    private void loadQueryParams() {
-        // which extra fields we want in the returned data
-        queryParams.put(
-                getContext().getString(R.string.show_fields_key),
-                getContext().getString(R.string.show_fields_val));
+        uriBuilder.appendQueryParameter(
+                c.getString(R.string.show_fields_key),
+                c.getString(R.string.show_fields_val));
 
-        // how many results we want
-        queryParams.put(
-                getContext().getString(R.string.page_size_key),
-                getContext().getString(R.string.page_size_val));
+        uriBuilder.appendQueryParameter(
+                c.getString(R.string.page_size_key),
+                c.getString(R.string.page_size_val));
+
+        return uriBuilder.toString();
     }
 
     // set the news category that we want to query
-    public void setCategory(String sectionId) {
-        queryParams.put(getContext().getString(R.string.section_key), sectionId);
+    public void setSectionId(String sectionId) {
+        this.sectionId = sectionId;
     }
 
     /**
@@ -78,14 +74,16 @@ public class GuardianApi extends AsyncTaskLoader<List<Section>> {
      */
     @Override
     public List<Section> loadInBackground() {
-        // add api key to query string
-        String apiParam = getContext().getString(R.string.api_key_key) +
-                getContext().getString(R.string.key_val_delim) +
-                queryParams.get(getContext().getString(R.string.api_key_key));
+        Context c = getContext();
+
+        Uri.Builder uriBuilder = this.apiUrl.buildUpon();
+        uriBuilder.appendPath(c.getString(R.string.section_query_method));
+
+        uriBuilder.appendQueryParameter(
+                c.getString(R.string.api_key_key),
+                c.getString(R.string.api_key_val));
 
         // get data from server
-        return QueryUtils.fetchSectionData(baseUrl +
-                getContext().getString(R.string.section_query_method) +
-                getContext().getString(R.string.query_string_prefix) + apiParam);
+        return QueryUtils.fetchSectionData(uriBuilder.toString());
     }
 }

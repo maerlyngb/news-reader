@@ -38,7 +38,7 @@ public class ArticleLoader extends AsyncTaskLoader<List<Article>> {
         GuardianApi api = new GuardianApi(getContext());
 
         // set the section of articles we want to load
-        api.setCategory(sectionId);
+        api.setSectionId(sectionId);
         return QueryUtils.fetchArticleData(api.getQueryUrl());
     }
 }
