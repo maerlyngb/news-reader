@@ -24,9 +24,10 @@ public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<List<Section>> {
 
     private static final int SECTION_LOADER_ID = 0;
-
-    private TextView noDataView;
     ProgressBar spinner;
+    private NavDrawerHandler navDrawerHandler;
+    private TextView noDataView;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Setup the side navigation drawer
+     *
+     * @param toolbar to place the toggle button
+     */
+    private void setupNavigationView(Toolbar toolbar) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        // toggle button in action bar
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // listen for nav items being clicked
+        this.navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this.navDrawerHandler);
+    }
+
+    /**
      * Setup the tabbed navigation view
      *
      * @param sections to display
@@ -69,9 +90,16 @@ public class MainActivity extends AppCompatActivity
         if (viewPager != null) {
             ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
 
+            // menu object for adding sections to the side nav
+            Menu menu = this.navigationView.getMenu();
+            Menu sectionMenu = menu.addSubMenu("Sections");
+            int groupId = 1;
+
             // setup a fragment for each news section
-            for (Section section : sections) {
+            for (int i = 0; i < sections.size(); i++) {
+                Section section = sections.get(i);
                 adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
+                sectionMenu.add(groupId, i, i, section.getWebTitle());
             }
 
             // add all news section fragments as tabs
