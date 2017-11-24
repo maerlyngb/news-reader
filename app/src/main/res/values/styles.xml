@@ -165,13 +165,14 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">2</item>
         <item name="android:textSize">@dimen/sp_medium</item>
+        <item name="android:textColor">@color/primaryText</item>
     </style>
 
     <style name="ArticleSummaryDetailLayout" parent="FullWidth">
         <item name="android:layout_marginTop">@dimen/dp_small</item>
         <item name="android:layout_marginBottom">@dimen/dp_small</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:textSize">@dimen/sp_medium</item>
+        <item name="android:textSize">@dimen/sp_small</item>
     </style>
 
     <style name="ArticleSummaryAuthor" parent="FullWidth">
