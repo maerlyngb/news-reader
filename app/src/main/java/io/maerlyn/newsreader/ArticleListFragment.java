@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ArticleListFragment extends Fragment
     private String sectionId;
     private ArticleRecyclerAdapter adapter;
     private ProgressBar spinner;
+    private TextView noData;
 
     /**
      * Return a new instance of ArticleListFragment
@@ -98,6 +100,18 @@ public class ArticleListFragment extends Fragment
         // display loading animation
         layout.addView(spinner);
 
+
+        // no data message
+        noData = new TextView(context);
+        noData.setVisibility(View.GONE);
+        noData.setText(getString(R.string.no_data));
+        noData.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        // display loading animation
+        layout.addView(noData);
+
         // Recycler view to display the list of articles
         RecyclerView recyclerView = layout.findViewById(R.id.article_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -139,6 +153,9 @@ public class ArticleListFragment extends Fragment
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
         if (articles != null && articles.size() > 0) {
             this.adapter.newDataSet(articles);
+        }
+        else{
+            this.noData.setVisibility(View.VISIBLE);
         }
         this.spinner.setVisibility(View.GONE);
     }
