@@ -42,10 +42,10 @@ public class Article {
     }
 
     public String getWebPublicationDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        LocalDate localDate = LocalDate.parse(this.webPublicationDate, formatter);
+        DateTimeFormatter fromStringFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime localDateTime = LocalDateTime.parse(this.webPublicationDate, fromStringFormatter);
 
-        return LocalDateTime.of(localDate, LocalDateTime.now().toLocalTime()).toString();
+        return localDateTime.format(DateTimeFormatter.ofPattern("dd MMM HH:mm"));
     }
 
     public void setWebPublicationDate(String webPublicationDate) {
