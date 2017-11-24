@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<List<Section>> {
 
     private static final int SECTION_LOADER_ID = 0;
-    private NavDrawerHandler navDrawerHandler;
 
     private TextView noDataView;
     ProgressBar spinner;
@@ -49,12 +48,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.main_activity_title);
 
-        this.navDrawerHandler = new NavDrawerHandler(this);
-
-        // setup side navigation drawer
-        setupNavigationView(toolbar);
-
-
         if (QueryUtils.hasInternetConnection(this)) {
 
             // if we have internet connectivity, start the loader to
@@ -67,26 +60,6 @@ public class MainActivity extends AppCompatActivity
             this.noDataView.setVisibility(View.VISIBLE);
             this.noDataView.setText(getString(R.string.no_internet_connection));
         }
-    }
-
-    /**
-     * Setup the side navigation drawer
-     *
-     * @param toolbar to place the toggle button
-     */
-    private void setupNavigationView(Toolbar toolbar) {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-
-        // toggle button in action bar
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        // listen for nav items being clicked
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this.navDrawerHandler);
     }
 
     /**
@@ -146,19 +119,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Close the side nav pane when the back button is pressed.
-     * If the nav pane is already closed, perform the standard os action.
-     */
-    @Override
-    public void onBackPressed() {
-        if (this.navDrawerHandler.isDrawerOpen()) {
-            this.navDrawerHandler.closeDrawer();
-        } else {
-            super.onBackPressed();
-        }
     }
 
     /**

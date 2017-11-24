@@ -47,15 +47,6 @@
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
-    <!-- Side Nav Drawer -->
-
-    <style name="SideNavDrawer" parent="FullHeight">
-        <item name="android:layout_gravity">start</item>
-        <item name="android:fitsSystemWindows">true</item>
-        <item name="headerLayout">@layout/nav_header_main</item>
-        <item name="menu">@menu/activity_main_drawer</item>
-    </style>
-
     <style name="SideNavHeaderLayout" parent="FullWidth">
         <item name="android:layout_height">@dimen/nav_header_height</item>
         <item name="android:background">@drawable/side_nav_bar</item>
