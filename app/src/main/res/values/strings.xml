@@ -18,23 +18,20 @@
     <string name="settings_menu_option">Settings</string>
 
     <!-- Guardian API strings -->
-    <string name="base_url">http://content.guardianapis.com/</string>
+    <string name="base_url" translatable="false">http://content.guardianapis.com/</string>
 
-    <string name="section_key">section</string>
+    <string name="section_key" translatable="false">section</string>
 
-    <string name="search_query_method">search</string>
-    <string name="section_query_method">sections</string>
+    <string name="search_query_method" translatable="false">search</string>
+    <string name="section_query_method" translatable="false">sections</string>
 
-    <string name="query_string_prefix">?</string>
-    <string name="key_val_delim">=</string>
-    <string name="query_param_delim">&amp;</string>
+    <string name="api_key_key" translatable="false">api-key</string>
+    <string name="api_key_val" translatable="false">2a2ac5ad-73bf-46e8-b416-ca457c21644a</string>
 
-    <string name="api_key_key">api-key</string>
-    <string name="api_key_val">2a2ac5ad-73bf-46e8-b416-ca457c21644a</string>
+    <string name="show_fields_key" translatable="false">show-fields</string>
+    <string name="show_fields_val" translatable="false">thumbnail,byline</string>
 
-    <string name="show_fields_key">show-fields</string>
-    <string name="show_fields_val">thumbnail,byline</string>
-
-    <string name="page_size_key">page-size</string>
-    <string name="page_size_val">10</string>
+    <string name="page_size_key" translatable="false">page-size</string>
+    <string name="page_size_val" translatable="false">10</string>
+    <string name="the_guardian">The Guardian</string>
 </resources>

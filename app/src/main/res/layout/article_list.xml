@@ -3,9 +3,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MatchParent">
 
+    <!-- News article loading animation -->
+    <ProgressBar
+        android:id="@+id/loader"
+        style="@style/ArticleSpinner" />
+
     <!-- News article recycler -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/article_list"
         style="@style/MatchParent" />
+
+    <!-- No data to display -->
+    <TextView
+        android:id="@+id/no_article_data"
+        style="@style/NoArticleData" />
 
 </RelativeLayout>

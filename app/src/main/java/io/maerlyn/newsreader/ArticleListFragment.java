@@ -92,25 +92,10 @@ public class ArticleListFragment extends Fragment
         this.context = layout.getContext();
 
         // loading animation
-        spinner = new ProgressBar(context);
-        spinner.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // display loading animation
-        layout.addView(spinner);
-
+        spinner = layout.findViewById(R.id.loader);
 
         // no data message
-        noData = new TextView(context);
-        noData.setVisibility(View.GONE);
-        noData.setText(getString(R.string.no_data));
-        noData.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // display loading animation
-        layout.addView(noData);
+        noData = layout.findViewById(R.id.no_article_data);
 
         // Recycler view to display the list of articles
         RecyclerView recyclerView = layout.findViewById(R.id.article_list);
@@ -155,6 +140,7 @@ public class ArticleListFragment extends Fragment
             this.adapter.newDataSet(articles);
         }
         else{
+            noData.setText(getString(R.string.no_data));
             this.noData.setVisibility(View.VISIBLE);
         }
         this.spinner.setVisibility(View.GONE);

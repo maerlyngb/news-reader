@@ -110,11 +110,8 @@ public class ArticleRecyclerAdapter
      * @param articles to display
      */
     public void newDataSet(List<Article> articles) {
-        if (articles != null && articles.size() > 0) {
-            this.articles.clear();
-            this.articles.addAll(articles);
-            notifyDataSetChanged();
-        }
+        this.articles = articles;
+        notifyDataSetChanged();
     }
 
     /**

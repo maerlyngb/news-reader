@@ -30,6 +30,7 @@ import java.util.List;
 public final class QueryUtils {
     // used for log messages
     public static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    private static final String charType = "UTF-8";
 
     // private constructor to prevent instantiations
     private QueryUtils() {
@@ -61,13 +62,13 @@ public final class QueryUtils {
             try {
                 // try and convert the json string to a JSONObject
                 JSONObject raw = new JSONObject(jsonResponse);
-                JSONObject response = raw.getJSONObject("response");
+                JSONObject response = raw.getJSONObject(GuardianResponse.RESPONSE);
 
                 // have to got a good response from the serve?
-                if (response.getString("status").equals("ok")) {
+                if (response.getString(GuardianResponse.STATUS).equals(GuardianResponse.OK)) {
 
                     // get a JSONArray of sections
-                    JSONArray sections = response.getJSONArray("results");
+                    JSONArray sections = response.getJSONArray(GuardianResponse.RESULTS);
 
                     // return a list of section objects
                     return extractArticles(sections);
@@ -107,13 +108,13 @@ public final class QueryUtils {
             try {
                 // try and convert the json string to a JSONObject
                 JSONObject raw = new JSONObject(jsonResponse);
-                JSONObject response = raw.getJSONObject("response");
+                JSONObject response = raw.getJSONObject(GuardianResponse.RESPONSE);
 
                 // have to got a good response from the serve?
-                if (response.getString("status").equals("ok")) {
+                if (response.getString(GuardianResponse.STATUS).equals(GuardianResponse.OK)) {
 
                     // get a JSONArray of sections
-                    JSONArray sections = response.getJSONArray("results");
+                    JSONArray sections = response.getJSONArray(GuardianResponse.RESULTS);
 
                     // return a list of section objects
                     return getSections(sections);
@@ -179,7 +180,7 @@ public final class QueryUtils {
     private static String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
         if (inputStream != null) {
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName(charType));
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
             while (line != null) {
@@ -222,25 +223,25 @@ public final class QueryUtils {
                 // and add it to the sections ArrayList
                 JSONObject articleJson = results.getJSONObject(i);
                 Article article = new Article();
-                article.setSectionName(articleJson.getString("sectionName"));
-                article.setHeadline(articleJson.getString("webTitle"));
-                article.setWebPublicationDate(articleJson.getString("webPublicationDate"));
-                article.setWebUrl(articleJson.getString("webUrl"));
+                article.setSectionName(articleJson.getString(GuardianResponse.SECTION_NAME));
+                article.setHeadline(articleJson.getString(GuardianResponse.WEB_TITLE));
+                article.setWebPublicationDate(articleJson.getString(GuardianResponse.WEB_PUBLICATION_DATE));
+                article.setWebUrl(articleJson.getString(GuardianResponse.WEB_URL));
 
-                if (articleJson.has("fields")) {
-                    JSONObject fields = articleJson.getJSONObject("fields");
+                if (articleJson.has(GuardianResponse.FIELDS)) {
+                    JSONObject fields = articleJson.getJSONObject(GuardianResponse.FIELDS);
 
                     // Article Author
                     if (fields != null) {
-                        if (fields.has("byline")) {
-                            article.setAuthor(fields.getString("byline"));
+                        if (fields.has(GuardianResponse.BY_LINE)) {
+                            article.setAuthor(fields.getString(GuardianResponse.BY_LINE));
                         }
                     }
 
                     // Article Thumbnail
                     if (fields != null) {
-                        if (fields.has("thumbnail")) {
-                            article.setThumbnailUrl(fields.getString("thumbnail"));
+                        if (fields.has(GuardianResponse.THUMBNAIL)) {
+                            article.setThumbnailUrl(fields.getString(GuardianResponse.THUMBNAIL));
                         }
                     }
                 }
@@ -271,16 +272,14 @@ public final class QueryUtils {
                 // and add it to the sections ArrayList
                 JSONObject article = results.getJSONObject(i);
 
-                String articleId = article.getString("id");
-
-                if (article.getString("id").equals("about")){
+                if (article.getString(GuardianResponse.ID).equals(GuardianResponse.ABOUT)){
                     continue;
                 }
 
-                sections.add(new Section(article.getString("id"),
-                        article.getString("webTitle"),
-                        article.getString("webUrl"),
-                        article.getString("apiUrl")));
+                sections.add(new Section(article.getString(GuardianResponse.ID),
+                        article.getString(GuardianResponse.WEB_TITLE),
+                        article.getString(GuardianResponse.WEB_URL),
+                        article.getString(GuardianResponse.API_URL)));
             }
 
         } catch (JSONException e) {
