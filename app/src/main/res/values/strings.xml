@@ -16,6 +16,7 @@
     <string name="no_data">Could not load data.</string>
 
     <string name="settings_menu_option">Settings</string>
+    <string name="settings_title">Application Preferences</string>
 
     <!-- Guardian API strings -->
     <string name="base_url" translatable="false">http://content.guardianapis.com/</string>
@@ -34,4 +35,7 @@
     <string name="page_size_key" translatable="false">page-size</string>
     <string name="page_size_val" translatable="false">10</string>
     <string name="the_guardian">The Guardian</string>
+    <string name="side_nav_sections_title">Sections</string>
+    <string name="show_section_msg">Yes</string>
+    <string name="hide_section_msg">No</string>
 </resources>

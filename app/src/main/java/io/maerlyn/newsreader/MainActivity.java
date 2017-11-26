@@ -2,8 +2,11 @@ package io.maerlyn.newsreader;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -12,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     private NavDrawerHandler navDrawerHandler;
     private TextView noDataView;
     private NavigationView navigationView;
+    private List<Section> sections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,8 @@ public class MainActivity extends AppCompatActivity
         this.noDataView = findViewById(R.id.no_tabs);
 
         // notify the user that we're getting data from the server
-        this.spinner = findViewById(R.id.tab_spinner);;
+        this.spinner = findViewById(R.id.tab_spinner);
+        ;
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.main_activity_title);
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity
      * @param sections to display
      */
     private void setupTabbedContent(List<Section> sections) {
+        this.sections = sections;
         ViewPager viewPager = findViewById(R.id.viewpager);
 
         if (viewPager != null) {
@@ -98,14 +105,25 @@ public class MainActivity extends AppCompatActivity
 
             // menu object for adding sections to the side nav
             Menu menu = this.navigationView.getMenu();
-            Menu sectionMenu = menu.addSubMenu("Sections");
+
+            // clean any previously loaded sections
+            menu.clear();
+
+            Menu sectionMenu = menu.addSubMenu(R.string.side_nav_sections_title);
             int groupId = 1;
+
+            // load user preferences
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
             // setup a fragment for each news section
             for (int i = 0; i < sections.size(); i++) {
                 Section section = sections.get(i);
-                adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
-                sectionMenu.add(groupId, i, i, section.getWebTitle());
+
+                // check if the user has said they don't want to see this section
+                if (sharedPrefs.getBoolean(section.getId(), true)) {
+                    adapter.addFragment(ArticleListFragment.newInstance(section), section.getWebTitle());
+                    sectionMenu.add(groupId, i, i, section.getWebTitle());
+                }
             }
 
             // add all news section fragments as tabs
@@ -128,6 +146,24 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, AppSettings.class);
+            Bundle bundle = new Bundle();
+
+            for (Section section : this.sections) {
+                bundle.putParcelable(section.getId(), section);
+            }
+
+            settingsIntent.putExtras(bundle);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

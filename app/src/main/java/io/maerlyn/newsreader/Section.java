@@ -1,11 +1,14 @@
 package io.maerlyn.newsreader;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Holds data about a specific news section
  *
  * @author Maerlyn Broadbent
  */
-public class Section {
+public class Section implements Parcelable {
     private String id;
     private String webTitle;
     private String webUrl;
@@ -16,6 +19,13 @@ public class Section {
         this.webTitle = webTitle;
         this.webUrl = webUrl;
         this.apiUrl = apiUrl;
+    }
+
+    public Section(Parcel in) {
+        this.id = in.readString();
+        this.webTitle = in.readString();
+        this.webUrl = in.readString();
+        this.apiUrl = in.readString();
     }
 
     public String getId() {
@@ -33,4 +43,28 @@ public class Section {
     public String getApiUrl() {
         return apiUrl;
     }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.webTitle);
+        dest.writeString(this.webUrl);
+        dest.writeString(this.apiUrl);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<Section> CREATOR = new Parcelable.Creator<Section>()
+    {
+        public Section createFromParcel(Parcel in)
+        {
+            return new Section(in);
+        }
+        public Section[] newArray(int size)
+        {
+            return new Section[size];
+        }
+    };
 }
