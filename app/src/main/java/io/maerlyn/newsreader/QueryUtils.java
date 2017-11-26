@@ -29,8 +29,27 @@ import java.util.List;
  */
 public final class QueryUtils {
     // used for log messages
-    public static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    private static final String LOG_TAG = QueryUtils.class.getSimpleName();
     private static final String charType = "UTF-8";
+    private static final int READ_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 15000;
+    private static final String HTTP_GET = "GET";
+
+    // Guardian API response
+    private static final String API_URL = "apiUrl";
+    private static final String WEB_URL = "webUrl";
+    private static final String WEB_TITLE = "webTitle";
+    private static final String SECTION_NAME = "sectionName";
+    private static final String WEB_PUBLICATION_DATE = "webPublicationDate";
+    private static final String FIELDS = "fields";
+    private static final String BY_LINE = "byline";
+    private static final String ID = "id";
+    private static final String THUMBNAIL = "thumbnail";
+    private static final String STATUS = "status";
+    private static final String OK = "ok";
+    private static final String RESULTS = "results";
+    private static final String RESPONSE = "response";
+    private static final String ABOUT = "about";
 
     // private constructor to prevent instantiations
     private QueryUtils() {
@@ -62,13 +81,13 @@ public final class QueryUtils {
             try {
                 // try and convert the json string to a JSONObject
                 JSONObject raw = new JSONObject(jsonResponse);
-                JSONObject response = raw.getJSONObject(GuardianResponse.RESPONSE);
+                JSONObject response = raw.getJSONObject(RESPONSE);
 
                 // have to got a good response from the serve?
-                if (response.getString(GuardianResponse.STATUS).equals(GuardianResponse.OK)) {
+                if (response.getString(STATUS).equals(OK)) {
 
                     // get a JSONArray of sections
-                    JSONArray sections = response.getJSONArray(GuardianResponse.RESULTS);
+                    JSONArray sections = response.getJSONArray(RESULTS);
 
                     // return a list of section objects
                     return extractArticles(sections);
@@ -108,13 +127,13 @@ public final class QueryUtils {
             try {
                 // try and convert the json string to a JSONObject
                 JSONObject raw = new JSONObject(jsonResponse);
-                JSONObject response = raw.getJSONObject(GuardianResponse.RESPONSE);
+                JSONObject response = raw.getJSONObject(RESPONSE);
 
                 // have to got a good response from the serve?
-                if (response.getString(GuardianResponse.STATUS).equals(GuardianResponse.OK)) {
+                if (response.getString(STATUS).equals(OK)) {
 
                     // get a JSONArray of sections
-                    JSONArray sections = response.getJSONArray(GuardianResponse.RESULTS);
+                    JSONArray sections = response.getJSONArray(RESULTS);
 
                     // return a list of section objects
                     return getSections(sections);
@@ -147,14 +166,14 @@ public final class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(15000 /* milliseconds */);
-            urlConnection.setRequestMethod("GET");
+            urlConnection.setReadTimeout(READ_TIMEOUT /* milliseconds */);
+            urlConnection.setConnectTimeout(CONNECT_TIMEOUT /* milliseconds */);
+            urlConnection.setRequestMethod(HTTP_GET);
             urlConnection.connect();
 
             // If the request was successful (response code 200),
             // then read the input stream and parse the response.
-            if (urlConnection.getResponseCode() == 200) {
+            if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
@@ -223,25 +242,25 @@ public final class QueryUtils {
                 // and add it to the sections ArrayList
                 JSONObject articleJson = results.getJSONObject(i);
                 Article article = new Article();
-                article.setSectionName(articleJson.getString(GuardianResponse.SECTION_NAME));
-                article.setHeadline(articleJson.getString(GuardianResponse.WEB_TITLE));
-                article.setWebPublicationDate(articleJson.getString(GuardianResponse.WEB_PUBLICATION_DATE));
-                article.setWebUrl(articleJson.getString(GuardianResponse.WEB_URL));
+                article.setSectionName(articleJson.getString(SECTION_NAME));
+                article.setHeadline(articleJson.getString(WEB_TITLE));
+                article.setWebPublicationDate(articleJson.getString(WEB_PUBLICATION_DATE));
+                article.setWebUrl(articleJson.getString(WEB_URL));
 
-                if (articleJson.has(GuardianResponse.FIELDS)) {
-                    JSONObject fields = articleJson.getJSONObject(GuardianResponse.FIELDS);
+                if (articleJson.has(FIELDS)) {
+                    JSONObject fields = articleJson.getJSONObject(FIELDS);
 
                     // Article Author
                     if (fields != null) {
-                        if (fields.has(GuardianResponse.BY_LINE)) {
-                            article.setAuthor(fields.getString(GuardianResponse.BY_LINE));
+                        if (fields.has(BY_LINE)) {
+                            article.setAuthor(fields.getString(BY_LINE));
                         }
                     }
 
                     // Article Thumbnail
                     if (fields != null) {
-                        if (fields.has(GuardianResponse.THUMBNAIL)) {
-                            article.setThumbnailUrl(fields.getString(GuardianResponse.THUMBNAIL));
+                        if (fields.has(THUMBNAIL)) {
+                            article.setThumbnailUrl(fields.getString(THUMBNAIL));
                         }
                     }
                 }
@@ -272,14 +291,14 @@ public final class QueryUtils {
                 // and add it to the sections ArrayList
                 JSONObject article = results.getJSONObject(i);
 
-                if (article.getString(GuardianResponse.ID).equals(GuardianResponse.ABOUT)) {
+                if (article.getString(ID).equals(ABOUT)) {
                     continue;
                 }
 
-                sections.add(new Section(article.getString(GuardianResponse.ID),
-                        article.getString(GuardianResponse.WEB_TITLE),
-                        article.getString(GuardianResponse.WEB_URL),
-                        article.getString(GuardianResponse.API_URL)));
+                sections.add(new Section(article.getString(ID),
+                        article.getString(WEB_TITLE),
+                        article.getString(WEB_URL),
+                        article.getString(API_URL)));
             }
 
         } catch (JSONException e) {

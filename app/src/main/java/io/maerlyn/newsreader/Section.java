@@ -10,7 +10,7 @@ import android.os.Parcelable;
  * @author Maerlyn Broadbent
  */
 public class Section implements Parcelable {
-    
+
     public static final Parcelable.Creator<Section> CREATOR = new Parcelable.Creator<Section>() {
         public Section createFromParcel(Parcel in) {
             return new Section(in);
