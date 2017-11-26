@@ -11,6 +11,11 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * Application preference screen
@@ -52,8 +57,11 @@ public class AppSettings extends AppCompatActivity {
                 // get current preferences
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
 
+                Collection<String> unsortedBundleKeys = bundle.keySet();
+                List<String> sectionIds = asSortedList(unsortedBundleKeys);
+
                 // loop through available news sections
-                for (String sectionId : bundle.keySet()) {
+                for (String sectionId : sectionIds) {
 
                     // current news section
                     Section section = (Section) bundle.get(sectionId);
@@ -104,6 +112,13 @@ public class AppSettings extends AppCompatActivity {
             String stringValue = value.toString();
             preference.setSummary(stringValue);
             return true;
+        }
+
+        public static
+        <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
+            List<T> list = new ArrayList<T>(c);
+            java.util.Collections.sort(list);
+            return list;
         }
     }
 }

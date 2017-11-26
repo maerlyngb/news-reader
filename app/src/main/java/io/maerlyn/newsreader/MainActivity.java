@@ -1,5 +1,8 @@
 package io.maerlyn.newsreader;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
@@ -101,7 +104,21 @@ public class MainActivity extends AppCompatActivity
         ViewPager viewPager = findViewById(R.id.viewpager);
 
         if (viewPager != null) {
-            ArticleListPageAdapter adapter = new ArticleListPageAdapter(getFragmentManager());
+
+            FragmentManager fragmentManager = getFragmentManager();
+
+            // remove all old fragments. This is needed when refreshing the list after
+            // preferences have been updated
+            List<Fragment> fragments = fragmentManager.getFragments();
+            if (fragments != null) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                for (Fragment fragment : fragments) {
+                    fragmentTransaction.remove(fragment);
+                }
+                fragmentTransaction.commitAllowingStateLoss();
+            }
+
+            ArticleListPageAdapter adapter = new ArticleListPageAdapter(fragmentManager);
 
             // menu object for adding sections to the side nav
             Menu menu = this.navigationView.getMenu();
