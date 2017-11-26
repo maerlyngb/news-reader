@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -30,6 +29,19 @@ public class AppSettings extends AppCompatActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+
+        /**
+         * Return a sorted list
+         *
+         * @param collection to sort
+         * @param <T>        type in collection
+         * @return sorted List
+         */
+        public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> collection) {
+            List<T> list = new ArrayList<>(collection);
+            java.util.Collections.sort(list);
+            return list;
+        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -112,13 +124,6 @@ public class AppSettings extends AppCompatActivity {
             String stringValue = value.toString();
             preference.setSummary(stringValue);
             return true;
-        }
-
-        public static
-        <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
-            List<T> list = new ArrayList<T>(c);
-            java.util.Collections.sort(list);
-            return list;
         }
     }
 }

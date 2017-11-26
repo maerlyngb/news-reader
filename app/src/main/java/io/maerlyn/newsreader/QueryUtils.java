@@ -272,7 +272,7 @@ public final class QueryUtils {
                 // and add it to the sections ArrayList
                 JSONObject article = results.getJSONObject(i);
 
-                if (article.getString(GuardianResponse.ID).equals(GuardianResponse.ABOUT)){
+                if (article.getString(GuardianResponse.ID).equals(GuardianResponse.ABOUT)) {
                     continue;
                 }
 

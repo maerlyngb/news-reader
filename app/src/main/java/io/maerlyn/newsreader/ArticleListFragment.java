@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -138,8 +137,7 @@ public class ArticleListFragment extends Fragment
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
         if (articles != null && articles.size() > 0) {
             this.adapter.newDataSet(articles);
-        }
-        else{
+        } else {
             noData.setText(getString(R.string.no_data));
             this.noData.setVisibility(View.VISIBLE);
         }

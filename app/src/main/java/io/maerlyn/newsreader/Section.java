@@ -5,10 +5,21 @@ import android.os.Parcelable;
 
 /**
  * Holds data about a specific news section
+ * Implements {@link Parcelable} so we can pass instances as {@link android.os.Bundle} data
  *
  * @author Maerlyn Broadbent
  */
 public class Section implements Parcelable {
+    
+    public static final Parcelable.Creator<Section> CREATOR = new Parcelable.Creator<Section>() {
+        public Section createFromParcel(Parcel in) {
+            return new Section(in);
+        }
+        public Section[] newArray(int size) {
+            return new Section[size];
+        }
+    };
+
     private String id;
     private String webTitle;
     private String webUrl;
@@ -55,16 +66,4 @@ public class Section implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
-    public static final Parcelable.Creator<Section> CREATOR = new Parcelable.Creator<Section>()
-    {
-        public Section createFromParcel(Parcel in)
-        {
-            return new Section(in);
-        }
-        public Section[] newArray(int size)
-        {
-            return new Section[size];
-        }
-    };
 }
